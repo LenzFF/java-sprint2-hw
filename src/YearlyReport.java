@@ -13,7 +13,7 @@ public class YearlyReport {
         monthExpenses = new HashMap<>();
     }
 
-    void readFile(String path) {
+    boolean readFile(String path) {
         // чтение из файла в monthExpenses
         // определяем год из имени файла
 
@@ -23,8 +23,9 @@ public class YearlyReport {
         try {
             fileContent = Files.readString(Path.of(path));
         } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
             fileContent = null;
+
+            return false;
         }
 
         //разбираем содержимое файла и помещаем в класс monthExpenses
@@ -51,6 +52,7 @@ public class YearlyReport {
 
             }
         }
+        return true;
     }
 
     double GetAverageIncome() {

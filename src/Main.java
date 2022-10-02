@@ -1,3 +1,5 @@
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.lang.*;
 import java.io.*;
@@ -21,7 +23,6 @@ public class Main {
             //вывод меню и считываение команд от пользователя
             printMenu();
             command = scanner.nextLine(); // считываем строку
-            commandInt = 0;
 
             //обработка завершения программы
             if (command.equals("Exit") || command.equals("exit")) return;
@@ -95,8 +96,18 @@ public class Main {
 
         for (int i = 1; i <= 3; i++) {
             MonthlyReport month = new MonthlyReport();
-            month.readFile("resources\\m.20210" + i + ".csv");
-            monthReports.add(month);
+            boolean isRead = false;
+            String filePath = "resources" + File.separator + "m.20210" + i + ".csv";
+            //проверяем существует ли файл
+            if (Files.exists(Path.of(filePath))) {
+                isRead = month.readFile(filePath);
+                //если получилось считать файл, то добавляем месяц, иначе выходим
+                if (isRead) monthReports.add(month);
+            }
+            else { // если нет, то сообщение об ошибке
+                System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
+                return;
+            }
         }
 
         System.out.println("Прочитано месячных отчетов - " + monthReports.size());
@@ -108,9 +119,19 @@ public class Main {
         // годовой отчет всего один, но логичнее хранить его в ArrayList, на случай масштабирования программы
         yearReports.clear();
         YearlyReport year = new YearlyReport();
-        year.readFile("resources\\y.2021.csv");
+        boolean isRead = false;
+        String filePath = "resources" + File.separator + "y.2021.csv";
 
-        yearReports.add(year);
+        //проверяем существует ли файл
+        if (Files.exists(Path.of(filePath))) {
+            isRead = year.readFile(filePath);
+            //если получилось считать файл, то добавляем месяц, иначе выходим
+            if (isRead) yearReports.add(year);
+        }
+        else {
+            System.out.println("Невозможно прочитать файл с годовым отчётом. Возможно, файл не находится в нужной директории.");
+            return;
+        }
 
         System.out.println("Прочитано годовых отчетов - " + yearReports.size());
         System.out.println("");

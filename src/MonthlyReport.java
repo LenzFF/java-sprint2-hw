@@ -20,7 +20,7 @@ public class MonthlyReport {
         incomeAndExpenses = new IncomeAndExpenses();
     }
 
-    void readFile(String path) {
+    boolean readFile(String path) {
     // чтение из файла в hashmap expenses
     // определяем год и номер месяца из имени файла
 
@@ -36,8 +36,10 @@ public class MonthlyReport {
         try {
             fileContent = Files.readString(Path.of(path));
         } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
+
             fileContent = null;
+
+            return false;
         }
 
         //разбираем содержимое файла и помещаем в класс Expense
@@ -69,6 +71,7 @@ public class MonthlyReport {
                 incomeAndExpenses.PutIncomeOrExpense(isExpense, quantity * price);
             }
         }
+        return true;
     }
 
 }

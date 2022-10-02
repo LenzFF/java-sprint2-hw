@@ -7,12 +7,6 @@ public class IncomeAndExpenses {
         income = 0;
         expenses = 0;
     }
-    IncomeAndExpenses(int _income, int _expense)
-    {
-        income = _income;
-        expenses = _expense;
-    }
-
     int GetProfit() {
         //считаем прибыль (доходы - расходы)
         return income - expenses;

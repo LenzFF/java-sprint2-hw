@@ -5,35 +5,30 @@ import java.util.*;
 
 public class YearlyReport {
 
-    int year; //текущий год
-    HashMap<Integer, IncomeAndExpenses> monthExpenses; //таблица расходов и доходов и по каждому месяцу
+    ArrayList<AccountantYearData> yearReports;
 
     YearlyReport() {
-        year = 0;
-        monthExpenses = new HashMap<>();
+        yearReports = new ArrayList<>();
     }
 
-    boolean readFile(String path) {
-        // чтение из файла в monthExpenses
+    void readFile(String path) {
+        // чтение из файла в yearReports
         // определяем год из имени файла
-
-        year = GetIntFromFilePath.GetYear(path);
 
         String fileContent;
         try {
             fileContent = Files.readString(Path.of(path));
         } catch (IOException e) {
             fileContent = null;
-
-            return false;
         }
 
-        //разбираем содержимое файла и помещаем в класс monthExpenses
+        //разбираем содержимое файла и помещаем в класс yearReports
         if (fileContent != null) {
             //делим на строки
             String[] lines = fileContent.split(System.lineSeparator());
 
-            monthExpenses.clear();
+            AccountantYearData newYear = new AccountantYearData();
+            newYear.year = GetIntFromFilePath.GetYear(path);
 
             for (int i = 1; i < lines.length; i++) {
                 String[] lineContents = lines[i].split(",");
@@ -41,37 +36,71 @@ public class YearlyReport {
                 int month = Integer.parseInt(lineContents[0]);
                 int value = Integer.parseInt(lineContents[1]);
                 boolean isExpense = Boolean.parseBoolean(lineContents[2]);
-                IncomeAndExpenses newItem = new IncomeAndExpenses();
 
-                //если в таблице еще нет данных по текущему месяцу, то создаем новую запись
-                if (monthExpenses.containsKey(month)) newItem = monthExpenses.get(month);
+                newYear.AddNewEntry(month, isExpense, value);
+            }
 
-                //добавляем данные о доходах и расходах
-                newItem.PutIncomeOrExpense(isExpense, value);
-                monthExpenses.put(month, newItem);
+            yearReports.add(newYear);
+        }
+    }
 
+    void printAllYearsInfo() {
+        //выводим статистику по году
+        for (AccountantYearData year : yearReports) {
+            System.out.println("Информация о годовом отчёте за " + year.year + " год:");
+
+            //статистика за каждый месяц
+            for (int i = 0; i < year.GetCount(); i++) {
+                int profit = year.GetProfit(i + 1);
+                System.out.println("Прибыль за " + MonthNames.monthNames[i] + ": " + profit);
+            }
+
+            System.out.println("Средний расход за все месяцы: " + year.GetAverageExpense());
+            System.out.println("Средний доход за все месяцы: " + year.GetAverageIncome());
+            System.out.println();
+        }
+    }
+
+    int GetCount() {
+        return yearReports.size();
+    }
+
+    void compareWithMonthReport(int yearInt, MonthlyReport monthReports) {
+        // сверка данных
+        int yearIncome = 0, yearExpenses = 0, monthIncome = 0, monthExpenses = 0;
+        AccountantYearData year = null;
+
+        for (AccountantYearData currentYear : yearReports) {
+            if (currentYear.year == yearInt) year = currentYear;
+        }
+
+        if (year == null) {
+            //если отчет за нужный год не прочитан, то выходим
+            System.out.println("Прочитаны отчеты не за тот год");
+            return;
+        }
+
+        if (year.GetCount() != monthReports.GetCount()) {
+            System.out.println("Количество записей в отчетах не совпадает!");
+            return;
+        }
+
+        for (int i = 1; i <= year.GetCount(); i++) {
+            // сравниваем доходы и расходы по каждому месяцу
+            yearIncome = year.GetIncomeByMonth(i);
+            yearExpenses = year.GetExpensesByMonth(i);
+
+            monthIncome = monthReports.GetIncomeByMonth(i);
+            monthExpenses = monthReports.GetExpensesByMonth(i);
+
+            if (!(yearIncome == monthIncome && monthExpenses == yearExpenses)) {
+                //если данные не сходятся то сообщение об ошибке
+                System.out.println("Обнаружена ошибка. Месяц: " + MonthNames.monthNames[i - 1]);
+                return;
             }
         }
-        return true;
-    }
 
-    double GetAverageIncome() {
-        //считаем средние доходы за все месяцы
-        double incomeSum = 0;
-
-        for (Integer month : monthExpenses.keySet()) {
-            incomeSum += monthExpenses.get(month).income;
-        }
-        return incomeSum / monthExpenses.size();
-    }
-
-    double GetAverageExpense() {
-        //считаем средние расходы за все месяцы
-        double expenseSum = 0;
-
-        for (Integer month : monthExpenses.keySet()) {
-            expenseSum += monthExpenses.get(month).expenses;
-        }
-        return expenseSum / monthExpenses.size();
+        System.out.println("Сверка данных успешна завершена! Ошибок нет.");
+        System.out.println("");
     }
 }

@@ -3,21 +3,15 @@ import java.nio.file.Path;
 import java.util.*;
 import java.lang.*;
 import java.io.*;
+
 public class Main {
 
-    static ArrayList<MonthlyReport> monthReports; //отчеты по всем месяцам
-    static ArrayList<YearlyReport> yearReports; //отчеты по всем годам
-
-    static String[] monthNames = {"Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август",
-                                  "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"};
-
     public static void main(String[] args) {
+        MonthlyReport monthReports = null;
+        YearlyReport yearReports = null;
         Scanner scanner = new Scanner(System.in);
         String command;
         int commandInt;
-
-        monthReports = new ArrayList<>();
-        yearReports = new ArrayList<>();
 
         while (true) {
             //вывод меню и считываение команд от пользователя
@@ -30,8 +24,7 @@ public class Main {
             // обработка некорректного числового ввода
             try {
                 commandInt = Integer.parseInt(command);
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Такой команды нет");
                 commandInt = 0;
             }
@@ -43,32 +36,58 @@ public class Main {
 
                 case 1:
                     // чтение всех месячных отчетов
-                    readAllMonthReports();
+                    monthReports = new MonthlyReport();
+
+                    for (int i = 1; i <= 3; i++) {
+                        String filePath = "resources" + File.separator + "m.20210" + i + ".csv";
+                        //проверяем существует ли файл
+                        if (Files.exists(Path.of(filePath))) {
+                            //читаем
+                            monthReports.readFile(filePath);
+                        } else { // если нет, то сообщение об ошибке
+                            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
+                            return;
+                        }
+                    }
+
+                    System.out.println("Прочитано месячных отчетов - " + monthReports.GetCount());
+                    System.out.println("");
                     break;
 
                 case 2:
                     //чтение годовых
-                    readAllYearReports();
+                    yearReports = new YearlyReport();
+                    String filePath = "resources" + File.separator + "y.2021" + ".csv";
+                    //проверяем существует ли файл
+                    if (Files.exists(Path.of(filePath))) {
+                        //читаем файл
+                        yearReports.readFile(filePath);
+                        System.out.println("Прочитано годовых отчетов - " + yearReports.GetCount());
+                        System.out.println("");
+
+                    } else { // если нет, то сообщение об ошибке
+                        System.out.println("Невозможно прочитать файл с годовым отчётом. Возможно, файл не находится в нужной директории.");
+                    }
                     break;
 
                 case 3:
-                    //сверка дарнных
-                    if (!monthReports.isEmpty() && !yearReports.isEmpty()) {
-                        checkMonthAndYearData();
-                    } else System.out.println("Отчеты не прочитаны");
+                    //сверка отчетов
+                    if (yearReports != null && monthReports != null)
+                        yearReports.compareWithMonthReport(2021, monthReports);
+                    else System.out.println("Отчеты не прочитаны");
                     break;
 
                 case 4:
                     // вывод статистики по месяцам
-                    if (!monthReports.isEmpty()) {
-                        printAllMonthInfo();
+                    if (monthReports.GetCount() > 0) {
+                        monthReports.printAllMonthInfo();
                     } else System.out.println("Месячные отчеты не прочитаны");
                     break;
 
                 case 5:
                     // вывод статистики по годам
-                    if (!yearReports.isEmpty()) {
-                        printAllYearInfo();
+                    if (yearReports.GetCount() > 0) {
+                        yearReports.printAllYearsInfo();
                     } else System.out.println("Годовые отчеты не прочитаны");
                     break;
 
@@ -87,125 +106,6 @@ public class Main {
         System.out.println("4 - Вывести информацию о всех месячных отчётах");
         System.out.println("5 - Вывести информацию о годовом отчёте");
         System.out.println("Exit - Завершить работу программы");
-        System.out.println("");
-    }
-
-    public static void readAllMonthReports(){
-        // читаем все месячные отчеты из файлов
-        monthReports.clear();
-
-        for (int i = 1; i <= 3; i++) {
-            MonthlyReport month = new MonthlyReport();
-            boolean isRead = false;
-            String filePath = "resources" + File.separator + "m.20210" + i + ".csv";
-            //проверяем существует ли файл
-            if (Files.exists(Path.of(filePath))) {
-                isRead = month.readFile(filePath);
-                //если получилось считать файл, то добавляем месяц, иначе выходим
-                if (isRead) monthReports.add(month);
-            }
-            else { // если нет, то сообщение об ошибке
-                System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно, файл не находится в нужной директории.");
-                return;
-            }
-        }
-
-        System.out.println("Прочитано месячных отчетов - " + monthReports.size());
-        System.out.println("");
-    }
-
-    public static void readAllYearReports(){
-        // читаем все годовые отчеты из файлов
-        // годовой отчет всего один, но логичнее хранить его в ArrayList, на случай масштабирования программы
-        yearReports.clear();
-        YearlyReport year = new YearlyReport();
-        boolean isRead = false;
-        String filePath = "resources" + File.separator + "y.2021.csv";
-
-        //проверяем существует ли файл
-        if (Files.exists(Path.of(filePath))) {
-            isRead = year.readFile(filePath);
-            //если получилось считать файл, то добавляем месяц, иначе выходим
-            if (isRead) yearReports.add(year);
-        }
-        else {
-            System.out.println("Невозможно прочитать файл с годовым отчётом. Возможно, файл не находится в нужной директории.");
-            return;
-        }
-
-        System.out.println("Прочитано годовых отчетов - " + yearReports.size());
-        System.out.println("");
-    }
-
-    public static void printAllMonthInfo() {
-        //выводи статистику под каждому месяцу
-        int year = monthReports.get(0).year; //год
-        System.out.println("Информация о всех месячных отчётах за " + year + " год:");
-
-        for (MonthlyReport month : monthReports) {
-            //имя месяца
-            System.out.println(monthNames[month.month - 1]);
-
-            //выводим самую прибыльную позицию и самую большую трату
-
-            System.out.println("Самый прибыльный товар:");
-            System.out.println(month.maxProfitName + ". Сумма - " + month.maxProfit);
-            System.out.println();
-
-            System.out.println("Самый большая трата:");
-            System.out.println(month.maxExpenseName + ". Сумма - " + month.maxExpense);
-            System.out.println();
-
-            //общие показатели за месяц
-            System.out.println("Расходы - " + month.incomeAndExpenses.expenses);
-            System.out.println("Доходы - " + month.incomeAndExpenses.income);
-            System.out.println("");
-        }
-
-    }
-
-    public static void printAllYearInfo() {
-        //выводим статистику по каждому году
-        for (YearlyReport year : yearReports) {
-            int yearInt = yearReports.get(0).year; //год
-            System.out.println("Информация о годовом отчёте за " + yearInt + " год:");
-
-            for (int month : year.monthExpenses.keySet())
-            {
-                int profit = year.monthExpenses.get(month).GetProfit();
-                System.out.println("Прибыль за " + monthNames[month - 1] + ": " + profit);
-            }
-
-            System.out.println("Средний расход за все месяцы: " + year.GetAverageExpense());
-            System.out.println("Средний доход за все месяцы: " + year.GetAverageIncome());
-            System.out.println();
-        }
-    }
-
-    public static void checkMonthAndYearData() {
-        // сверка данных
-        int yearIncome = 0, yearExpenses = 0,
-                monthIncome = 0, monthExpenses = 0;
-        for (YearlyReport year : yearReports) {
-            if (year.year != monthReports.get(0).year) {
-                System.out.println("Прочитаны отчеты не за тот год");
-                return;
-            }
-            for (MonthlyReport month : monthReports) {
-                yearIncome = year.monthExpenses.get(month.month).income;
-                yearExpenses = year.monthExpenses.get(month.month).expenses;
-                monthIncome = month.incomeAndExpenses.income;
-                monthExpenses = month.incomeAndExpenses.expenses;
-
-                if (!(yearIncome == monthIncome && monthExpenses ==yearExpenses)) {
-                    //если данные не сходятся то сообщение об ошибке
-                    System.out.println("Обнаружена ошибка. Месяц: " + monthNames[month.month - 1]);
-                    return;
-                }
-
-            }
-        }
-        System.out.println("Сверка данных успешна завершена! Ошибок нет.");
         System.out.println("");
     }
 }

@@ -7,12 +7,12 @@ public class IncomeAndExpenses {
         income = 0;
         expenses = 0;
     }
-    int GetProfit() {
+    int getProfit() {
         //считаем прибыль (доходы - расходы)
         return income - expenses;
     }
 
-    void PutIncomeOrExpense(boolean isExpense, int value) {
+    void putIncomeOrExpense(boolean isExpense, int value) {
         //если передаваемое значение это расходы, то увеличиваем переменную расходов, и наоборот.
         if (isExpense) expenses += value;
         else income += value;

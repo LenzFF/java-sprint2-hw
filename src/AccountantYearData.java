@@ -9,22 +9,22 @@ public class AccountantYearData {
         monthExpenses = new HashMap<>();
     }
 
-    void AddNewEntry(int month, boolean isExpense, int value) {
+    void addNewEntry(int month, boolean isExpense, int value) {
         //добавляем новую запись в таблицу
         IncomeAndExpenses newMonth = new IncomeAndExpenses();
 
         if (monthExpenses.containsKey(month)) newMonth = monthExpenses.get(month);
 
-        newMonth.PutIncomeOrExpense(isExpense, value);
+        newMonth.putIncomeOrExpense(isExpense, value);
         monthExpenses.put(month, newMonth);
     }
 
-    int GetCount() {
+    int getCount() {
         //возвращаем количество записей в таблице
         return monthExpenses.size();
     }
 
-    double GetAverageIncome() {
+    double getAverageIncome() {
         //считаем средние доходы за все месяцы
         double incomeSum = 0;
 
@@ -34,7 +34,7 @@ public class AccountantYearData {
         return incomeSum / monthExpenses.size();
     }
 
-    double GetAverageExpense() {
+    double getAverageExpense() {
         //считаем средние расходы за все месяцы
         double expenseSum = 0;
 
@@ -44,17 +44,17 @@ public class AccountantYearData {
         return expenseSum / monthExpenses.size();
     }
 
-    int GetProfit(Integer month) {
+    int getProfit(Integer month) {
         //прибыль за месяц
-        return monthExpenses.get(month).GetProfit();
+        return monthExpenses.get(month).getProfit();
     }
 
-    int GetIncomeByMonth(int monthInt) {
+    int getIncomeByMonth(int monthInt) {
         //доходы за месяц
         return monthExpenses.get(monthInt).income;
     }
 
-    int GetExpensesByMonth(int monthInt) {
+    int getExpensesByMonth(int monthInt) {
         //расходы за месяц
         return monthExpenses.get(monthInt).expenses;
     }

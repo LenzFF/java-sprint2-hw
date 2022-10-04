@@ -28,7 +28,7 @@ public class YearlyReport {
             String[] lines = fileContent.split(System.lineSeparator());
 
             AccountantYearData newYear = new AccountantYearData();
-            newYear.year = GetIntFromFilePath.GetYear(path);
+            newYear.year = GetIntFromFilePath.getYear(path);
 
             for (int i = 1; i < lines.length; i++) {
                 String[] lineContents = lines[i].split(",");
@@ -37,7 +37,7 @@ public class YearlyReport {
                 int value = Integer.parseInt(lineContents[1]);
                 boolean isExpense = Boolean.parseBoolean(lineContents[2]);
 
-                newYear.AddNewEntry(month, isExpense, value);
+                newYear.addNewEntry(month, isExpense, value);
             }
 
             yearReports.add(newYear);
@@ -50,18 +50,18 @@ public class YearlyReport {
             System.out.println("Информация о годовом отчёте за " + year.year + " год:");
 
             //статистика за каждый месяц
-            for (int i = 0; i < year.GetCount(); i++) {
-                int profit = year.GetProfit(i + 1);
+            for (int i = 0; i < year.getCount(); i++) {
+                int profit = year.getProfit(i + 1);
                 System.out.println("Прибыль за " + MonthNames.monthNames[i] + ": " + profit);
             }
 
-            System.out.println("Средний расход за все месяцы: " + year.GetAverageExpense());
-            System.out.println("Средний доход за все месяцы: " + year.GetAverageIncome());
+            System.out.println("Средний расход за все месяцы: " + year.getAverageExpense());
+            System.out.println("Средний доход за все месяцы: " + year.getAverageIncome());
             System.out.println();
         }
     }
 
-    int GetCount() {
+    int getCount() {
         return yearReports.size();
     }
 
@@ -80,18 +80,18 @@ public class YearlyReport {
             return;
         }
 
-        if (year.GetCount() != monthReports.GetCount()) {
+        if (year.getCount() != monthReports.getCount()) {
             System.out.println("Количество записей в отчетах не совпадает!");
             return;
         }
 
-        for (int i = 1; i <= year.GetCount(); i++) {
+        for (int i = 1; i <= year.getCount(); i++) {
             // сравниваем доходы и расходы по каждому месяцу
-            yearIncome = year.GetIncomeByMonth(i);
-            yearExpenses = year.GetExpensesByMonth(i);
+            yearIncome = year.getIncomeByMonth(i);
+            yearExpenses = year.getExpensesByMonth(i);
 
-            monthIncome = monthReports.GetIncomeByMonth(i);
-            monthExpenses = monthReports.GetExpensesByMonth(i);
+            monthIncome = monthReports.getIncomeByMonth(i);
+            monthExpenses = monthReports.getExpensesByMonth(i);
 
             if (!(yearIncome == monthIncome && monthExpenses == yearExpenses)) {
                 //если данные не сходятся то сообщение об ошибке

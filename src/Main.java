@@ -7,8 +7,8 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
-        MonthlyReport monthReports = null;
-        YearlyReport yearReports = null;
+        MonthlyReport monthReports = new MonthlyReport();
+        YearlyReport yearReports = new YearlyReport();
         Scanner scanner = new Scanner(System.in);
         String command;
         int commandInt;
@@ -50,7 +50,7 @@ public class Main {
                         }
                     }
 
-                    System.out.println("Прочитано месячных отчетов - " + monthReports.GetCount());
+                    System.out.println("Прочитано месячных отчетов - " + monthReports.getCount());
                     System.out.println("");
                     break;
 
@@ -62,7 +62,7 @@ public class Main {
                     if (Files.exists(Path.of(filePath))) {
                         //читаем файл
                         yearReports.readFile(filePath);
-                        System.out.println("Прочитано годовых отчетов - " + yearReports.GetCount());
+                        System.out.println("Прочитано годовых отчетов - " + yearReports.getCount());
                         System.out.println("");
 
                     } else { // если нет, то сообщение об ошибке
@@ -72,21 +72,21 @@ public class Main {
 
                 case 3:
                     //сверка отчетов
-                    if (yearReports != null && monthReports != null)
+                    if (yearReports.getCount() > 0 && monthReports.getCount() > 0)
                         yearReports.compareWithMonthReport(2021, monthReports);
                     else System.out.println("Отчеты не прочитаны");
                     break;
 
                 case 4:
                     // вывод статистики по месяцам
-                    if (monthReports.GetCount() > 0) {
+                    if (monthReports.getCount() > 0) {
                         monthReports.printAllMonthInfo();
                     } else System.out.println("Месячные отчеты не прочитаны");
                     break;
 
                 case 5:
                     // вывод статистики по годам
-                    if (yearReports.GetCount() > 0) {
+                    if (yearReports.getCount() > 0) {
                         yearReports.printAllYearsInfo();
                     } else System.out.println("Годовые отчеты не прочитаны");
                     break;

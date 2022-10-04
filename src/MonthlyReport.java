@@ -50,19 +50,19 @@ public class MonthlyReport {
                 }
 
                 // определяем год и номер месяца из имени файла
-                int year = GetIntFromFilePath.GetYear(path);
-                int month = GetIntFromFilePath.GetMonth(path);
+                int year = GetIntFromFilePath.getYear(path);
+                int month = GetIntFromFilePath.getMonth(path);
                 //добавляем новую запись
                 //newData.incomeAndExpenses.PutIncomeOrExpense(isExpense, quantity * price);
 
-                newData.AddNewEntry(year, month, isExpense, sum);
+                newData.addNewEntry(year, month, isExpense, sum);
             }
             //добавляем в список
             monthReports.add(newData);
         }
     }
 
-    int GetCount() {
+    int getCount() {
         return monthReports.size();
     }
 
@@ -94,12 +94,12 @@ public class MonthlyReport {
         }
     }
 
-    int GetIncomeByMonth(int index) {
+    int getIncomeByMonth(int index) {
         // возвращаем доход за месяц
         return monthReports.get(index - 1).incomeAndExpenses.income;
     }
 
-    int GetExpensesByMonth(int index) {
+    int getExpensesByMonth(int index) {
         // возвращаем расход за месяц
         return monthReports.get(index - 1).incomeAndExpenses.expenses;
     }

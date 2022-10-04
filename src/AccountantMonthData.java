@@ -19,10 +19,10 @@ public class AccountantMonthData {
         maxExpenseName = "";
     }
 
-    void AddNewEntry(int yearInt, int monthInt, boolean isExpense, int value) {
+    void addNewEntry(int yearInt, int monthInt, boolean isExpense, int value) {
         //добавляем новую запись
         year = yearInt;
         month = monthInt;
-        incomeAndExpenses.PutIncomeOrExpense(isExpense, value);
+        incomeAndExpenses.putIncomeOrExpense(isExpense, value);
     }
 }
